@@ -1,0 +1,2016 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ParkSmart - Smart Parking System</title>
+
+<style>
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: Arial, sans-serif;
+}
+
+body {
+    background: #f1f5f9;
+    color: #1e293b;
+}
+
+.layout {
+    display: flex;
+    min-height: 100vh;
+}
+
+.sidebar {
+    width: 240px;
+    min-height: 100vh;
+    background: #0f172a;
+    color: white;
+    padding: 25px 15px;
+    flex-shrink: 0;
+}
+
+.logo {
+    font-size: 25px;
+    font-weight: bold;
+    margin-bottom: 35px;
+    padding-left: 12px;
+}
+
+.logo span {
+    color: #38bdf8;
+}
+
+.nav {
+    display: block;
+    padding: 13px 15px;
+    margin: 7px 0;
+    color: #cbd5e1;
+    text-decoration: none;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+.nav:hover,
+.nav.active {
+    background: #1e293b;
+    color: white;
+}
+
+.main {
+    flex: 1;
+    padding: 30px;
+    min-width: 0;
+}
+
+header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 25px;
+}
+
+header h1 {
+    font-size: 25px;
+}
+
+.db-status {
+    background: #dcfce7;
+    color: #166534;
+    padding: 9px 14px;
+    border-radius: 20px;
+    font-size: 13px;
+}
+
+.section {
+    display: none;
+}
+
+.section.active {
+    display: block;
+}
+
+.stats {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 18px;
+    margin-bottom: 22px;
+}
+
+.stat,
+.panel {
+    background: white;
+    padding: 23px;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px #0000000b;
+}
+
+.stat small {
+    color: #64748b;
+}
+
+.num {
+    font-size: 30px;
+    font-weight: bold;
+    margin-top: 10px;
+}
+
+.green {
+    color: #16a34a;
+}
+
+.red {
+    color: #dc2626;
+}
+
+.panel h2 {
+    margin-bottom: 10px;
+}
+
+.muted {
+    color: #64748b;
+    margin-bottom: 18px;
+    line-height: 1.6;
+}
+
+.grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(125px, 1fr));
+    gap: 13px;
+    margin-top: 18px;
+}
+
+.slot {
+    background: #dcfce7;
+    border: 1px solid #86efac;
+    color: #166534;
+    padding: 18px 12px;
+    border-radius: 9px;
+    text-align: center;
+    font-weight: bold;
+}
+
+.slot.occupied {
+    background: #fee2e2;
+    border-color: #fca5a5;
+    color: #991b1b;
+}
+
+.slot.maintenance {
+    background: #fef3c7;
+    border-color: #fcd34d;
+    color: #92400e;
+}
+
+.slot small {
+    display: block;
+    margin-top: 8px;
+    font-weight: normal;
+}
+
+button {
+    border: none;
+    padding: 11px 16px;
+    border-radius: 7px;
+    cursor: pointer;
+    font-weight: bold;
+    margin: 5px 5px 5px 0;
+}
+
+.primary {
+    background: #2563eb;
+    color: white;
+}
+
+.primary:hover {
+    background: #1d4ed8;
+}
+
+.secondary {
+    background: #e2e8f0;
+    color: #1e293b;
+}
+
+button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.search-box {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin: 15px 0;
+}
+
+.search-box input {
+    flex: 1;
+    min-width: 180px;
+    padding: 12px;
+    border: 1px solid #cbd5e1;
+    border-radius: 7px;
+    outline: none;
+}
+
+.search-box input:focus {
+    border-color: #2563eb;
+}
+
+.tabs {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin: 15px 0;
+}
+
+.tab {
+    background: #e2e8f0;
+}
+
+.tab.active {
+    background: #2563eb;
+    color: white;
+}
+
+.fields {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 17px;
+    margin: 20px 0;
+}
+
+.field label {
+    display: block;
+    font-size: 14px;
+    font-weight: bold;
+    margin-bottom: 7px;
+}
+
+.field input,
+.field select {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #cbd5e1;
+    border-radius: 7px;
+    outline: none;
+}
+
+.field input:focus,
+.field select:focus {
+    border-color: #2563eb;
+}
+
+.wide {
+    width: 100%;
+    margin-top: 10px;
+}
+
+.notice {
+    background: #eff6ff;
+    color: #1e40af;
+    padding: 14px;
+    border-radius: 8px;
+    margin-top: 18px;
+    line-height: 1.5;
+}
+
+.features {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 15px;
+    margin-top: 20px;
+}
+
+.feature {
+    background: #f8fafc;
+    padding: 18px;
+    border-radius: 9px;
+    border: 1px solid #e2e8f0;
+}
+
+.feature h3 {
+    margin-bottom: 8px;
+}
+
+.feature p {
+    color: #64748b;
+    line-height: 1.5;
+}
+
+.toast {
+    display: none;
+    padding: 12px;
+    margin: 12px 0;
+    border-radius: 7px;
+}
+
+.toast.show {
+    display: block;
+}
+
+.toast.success {
+    background: #dcfce7;
+    color: #166534;
+}
+
+.toast.error {
+    background: #fee2e2;
+    color: #991b1b;
+}
+
+/* DASHBOARD AI OVERVIEW */
+
+.overview-panel {
+    margin-bottom: 22px;
+}
+
+.overview-heading {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 8px;
+}
+
+.overview-badge {
+    background: #dcfce7;
+    color: #166534;
+    padding: 6px 11px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: bold;
+}
+
+.overview-cards {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 14px;
+    margin-top: 20px;
+}
+
+.overview-card {
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 10px;
+    padding: 17px;
+}
+
+.overview-card small {
+    color: #64748b;
+    font-size: 13px;
+}
+
+.overview-number {
+    font-size: 27px;
+    font-weight: bold;
+    margin-top: 10px;
+}
+
+.overview-insight {
+    background: #eff6ff;
+    border-left: 4px solid #3b82f6;
+    padding: 16px;
+    border-radius: 8px;
+    margin-top: 18px;
+    line-height: 1.6;
+}
+
+.overview-insight h3 {
+    margin-bottom: 6px;
+    font-size: 15px;
+}
+
+.overview-link {
+    color: #2563eb;
+    font-weight: bold;
+    cursor: pointer;
+    margin-top: 17px;
+    display: inline-block;
+}
+
+.overview-link:hover {
+    text-decoration: underline;
+}
+
+/* AI INSIGHTS */
+
+.ai-section {
+    margin-top: 22px;
+}
+
+.ai-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 15px;
+    margin-top: 18px;
+}
+
+.ai-card {
+    background: #f8fafc;
+    padding: 18px;
+    border: 1px solid #e2e8f0;
+    border-radius: 9px;
+}
+
+.ai-card small {
+    color: #64748b;
+}
+
+.ai-number {
+    font-size: 27px;
+    font-weight: bold;
+    margin-top: 10px;
+    color: #2563eb;
+}
+
+.chart-panel {
+    background: white;
+    padding: 22px;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    margin-top: 22px;
+}
+
+.chart-panel h3 {
+    margin-bottom: 8px;
+}
+
+.chart-description {
+    color: #64748b;
+    font-size: 14px;
+    margin-bottom: 22px;
+    line-height: 1.5;
+}
+
+.chart-row {
+    display: grid;
+    grid-template-columns: 125px 1fr 45px;
+    gap: 12px;
+    align-items: center;
+    margin: 19px 0;
+}
+
+.chart-label {
+    font-size: 14px;
+    font-weight: bold;
+}
+
+.chart-track {
+    height: 17px;
+    background: #e2e8f0;
+    border-radius: 20px;
+    overflow: hidden;
+}
+
+.chart-fill {
+    height: 100%;
+    width: 0;
+    border-radius: 20px;
+    transition: width 0.5s ease;
+}
+
+.available-fill {
+    background: #22c55e;
+}
+
+.occupied-fill {
+    background: #ef4444;
+}
+
+.maintenance-fill {
+    background: #f59e0b;
+}
+
+.zone-fill {
+    background: #3b82f6;
+}
+
+.daily-fill {
+    background: #8b5cf6;
+}
+
+.chart-value {
+    font-weight: bold;
+    text-align: right;
+    font-size: 14px;
+}
+
+.chart-empty {
+    color: #64748b;
+    padding: 15px 0;
+}
+
+.chart-legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 18px;
+    margin-top: 20px;
+    color: #64748b;
+    font-size: 13px;
+}
+
+.legend-item {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+}
+
+.legend-dot {
+    width: 11px;
+    height: 11px;
+    border-radius: 50%;
+}
+
+.ai-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 12px;
+    text-align: left;
+}
+
+.ai-table th,
+.ai-table td {
+    padding: 11px;
+    border-bottom: 1px solid #e2e8f0;
+}
+
+.ai-table th {
+    background: #f1f5f9;
+}
+
+/* ABOUT PAGE */
+
+.about-intro {
+    background: #eff6ff;
+    padding: 22px;
+    border-radius: 10px;
+    margin: 18px 0;
+    line-height: 1.8;
+    color: #334155;
+}
+
+.about-list {
+    padding-left: 22px;
+    line-height: 2;
+    color: #64748b;
+    margin-top: 12px;
+}
+
+.about-block {
+    margin-top: 25px;
+}
+
+footer {
+    margin-top: 35px;
+    padding: 20px;
+    text-align: center;
+    color: #64748b;
+    font-size: 13px;
+    border-top: 1px solid #e2e8f0;
+}
+
+@media(max-width: 900px) {
+    .overview-cards {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media(max-width: 750px) {
+    .layout {
+        display: block;
+    }
+
+    .sidebar {
+        width: 100%;
+        min-height: auto;
+    }
+
+    .main {
+        padding: 18px;
+    }
+
+    .stats,
+    .fields {
+        grid-template-columns: 1fr;
+    }
+
+    .chart-row {
+        grid-template-columns: 95px 1fr 35px;
+        gap: 7px;
+    }
+
+    header h1 {
+        font-size: 20px;
+    }
+}
+
+@media(max-width: 450px) {
+    .overview-cards {
+        grid-template-columns: 1fr;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<div class="layout">
+
+<aside class="sidebar">
+
+    <div class="logo">Park<span>Smart</span></div>
+
+    <a class="nav active" data-page="dashboard">Dashboard</a>
+    <a class="nav" data-page="ai">AI Insights</a>
+    <a class="nav" data-page="queue">Booking Queue</a>
+    <a class="nav" data-page="features">Features</a>
+    <a class="nav" data-page="about">About</a>
+
+</aside>
+
+<main class="main">
+
+<header>
+    <h1 id="pageTitle">Smart Parking Dashboard</h1>
+    <div class="db-status" id="dbStatus">● Connecting...</div>
+</header>
+
+<!-- DASHBOARD -->
+
+<section id="dashboard" class="section active">
+
+    <div class="panel">
+
+        <h2>Find Your Parking Slot</h2>
+
+        <p class="muted">
+            Enter a parking slot number to check its availability.
+        </p>
+
+        <div class="search-box">
+
+            <input type="text" id="slotSearch"
+                   placeholder="Enter slot number (e.g. A01)"
+                   onkeydown="if(event.key === 'Enter') searchSlot()">
+
+            <button class="primary" onclick="searchSlot()">Search Slot</button>
+            <button class="secondary" onclick="clearSearch()">Clear</button>
+
+        </div>
+
+        <div id="searchResult"></div>
+
+    </div>
+
+    <div class="stats" style="margin-top:22px;">
+
+        <div class="stat">
+            <small>Total Parking Slots</small>
+            <div class="num" id="total">—</div>
+        </div>
+
+        <div class="stat">
+            <small>Available Slots</small>
+            <div class="num green" id="available">—</div>
+        </div>
+
+        <div class="stat">
+            <small>Occupied Slots</small>
+            <div class="num red" id="occupied">—</div>
+        </div>
+
+    </div>
+
+    <!-- AI PARKING OVERVIEW -->
+
+    <div class="panel overview-panel">
+
+        <div class="overview-heading">
+            <h2>AI Parking Overview</h2>
+            <span class="overview-badge">Smart Analytics</span>
+        </div>
+
+        <p class="muted">
+            Get a quick summary of parking availability and AI-based insights.
+        </p>
+
+        <div class="overview-cards">
+
+            <div class="overview-card">
+                <small>Available Slots</small>
+                <div class="overview-number green" id="overviewAvailable">—</div>
+            </div>
+
+            <div class="overview-card">
+                <small>Occupied Slots</small>
+                <div class="overview-number red" id="overviewOccupied">—</div>
+            </div>
+
+            <div class="overview-card">
+                <small>Total Bookings</small>
+                <div class="overview-number" id="overviewBookings">—</div>
+            </div>
+
+            <div class="overview-card">
+                <small>Predicted Availability (30 min)</small>
+                <div class="overview-number" id="overviewPrediction">—</div>
+            </div>
+
+        </div>
+
+        <div class="overview-insight">
+            <h3>Parking Insight</h3>
+            <p id="overviewInsight">
+                Loading parking insights...
+            </p>
+        </div>
+
+        <div class="overview-insight">
+            <h3>Most Booked Zone</h3>
+            <p id="overviewZone">Loading zone information...</p>
+        </div>
+
+        <span class="overview-link" onclick="showPage('ai')">
+            View Detailed AI Insights →
+        </span>
+
+    </div>
+
+    <div class="panel" style="margin-bottom:22px;">
+
+        <h2>Register Your Vehicle</h2>
+
+        <p class="muted">
+            Enter your details and submit a parking booking request.
+        </p>
+
+        <button class="primary" onclick="showPage('register')">
+            Register Now
+        </button>
+
+    </div>
+
+    <div class="panel">
+
+        <h2>Parking Availability</h2>
+
+        <p class="muted">
+            Current parking slot status from the database.
+        </p>
+
+        <div class="tabs">
+            <button class="tab active" data-zone="ALL">All Zones</button>
+            <button class="tab" data-zone="A">Zone A</button>
+            <button class="tab" data-zone="B">Zone B</button>
+            <button class="tab" data-zone="C">Zone C</button>
+        </div>
+
+        <div id="dashboardSlots" class="grid"></div>
+
+        <button class="secondary" onclick="loadSlots()">
+            Refresh Availability
+        </button>
+
+        <div class="notice">
+            Green means available; red means occupied; yellow means maintenance.
+            Parking status is stored in MySQL.
+        </div>
+
+    </div>
+
+</section>
+
+<!-- REGISTER VEHICLE -->
+
+<section id="register" class="section">
+
+    <div class="panel">
+
+        <h2>Register Vehicle & Book Parking</h2>
+
+        <p class="muted">
+            Enter owner and vehicle details. Your request will be added
+            to the FIFO booking queue.
+        </p>
+
+        <button class="secondary" onclick="showPage('dashboard')">
+            Back to Dashboard
+        </button>
+
+        <div id="toast" class="toast"></div>
+
+        <form id="bookingForm">
+
+            <div class="fields">
+
+                <div class="field">
+                    <label>Full Name *</label>
+                    <input name="fullName" required maxlength="100"
+                           placeholder="Owner's full name">
+                </div>
+
+                <div class="field">
+                    <label>Mobile Number *</label>
+                    <input name="mobileNumber" required
+                           pattern="[0-9]{10}" maxlength="10"
+                           inputmode="numeric" placeholder="10-digit number">
+                </div>
+
+                <div class="field">
+                    <label>Vehicle Name / Model *</label>
+                    <input name="vehicleName" required
+                           placeholder="e.g. Swift, Activa">
+                </div>
+
+                <div class="field">
+                    <label>Vehicle Registration Number *</label>
+                    <input name="vehicleNumber" required
+                           placeholder="e.g. PB10AB1234">
+                </div>
+
+                <div class="field">
+                    <label>Number of Seats *</label>
+                    <input name="vehicleSeaters" type="number"
+                           min="1" max="100" value="5" required>
+                </div>
+
+                <div class="field">
+                    <label>Vehicle Type *</label>
+                    <select name="vehicleType" required>
+                        <option value="CAR">Car</option>
+                        <option value="BIKE">Bike</option>
+                        <option value="SUV">SUV</option>
+                    </select>
+                </div>
+
+            </div>
+
+            <button id="submitBtn" class="primary wide" type="submit">
+                Add Request to Booking Queue
+            </button>
+
+        </form>
+
+        <div class="notice">
+            Your request is stored in MySQL. A parking slot is assigned
+            when the administrator selects Process Next Booking.
+        </div>
+
+    </div>
+
+</section>
+
+<!-- AI INSIGHTS -->
+
+<section id="ai" class="section">
+
+    <div class="panel ai-section">
+
+        <h2>AI Parking Insights</h2>
+
+        <p class="muted">
+            View parking availability predictions and booking analytics.
+        </p>
+
+        <button class="primary" onclick="loadAIInsights()">
+            Refresh AI Insights
+        </button>
+
+        <div class="ai-cards">
+
+            <div class="ai-card">
+                <small>Predicted Availability After 30 Minutes</small>
+                <div class="ai-number" id="prediction30">—</div>
+            </div>
+
+            <div class="ai-card">
+                <small>Predicted Availability After 60 Minutes</small>
+                <div class="ai-number" id="prediction60">—</div>
+            </div>
+
+            <div class="ai-card">
+                <small>Total Bookings</small>
+                <div class="ai-number" id="aiBookings">—</div>
+            </div>
+
+            <div class="ai-card">
+                <small>Maintenance Slots</small>
+                <div class="ai-number" id="aiMaintenance">—</div>
+            </div>
+
+        </div>
+
+        <div class="notice" id="predictionInfo">
+            Click Refresh AI Insights to load parking predictions.
+        </div>
+
+    </div>
+
+    <!-- PARKING AVAILABILITY CHART -->
+
+    <div class="chart-panel">
+
+        <h3>Parking Availability Chart</h3>
+
+        <p class="chart-description">
+            Distribution of parking slots according to their current status.
+        </p>
+
+        <div id="availabilityChart">
+            <p class="chart-empty">Loading parking availability...</p>
+        </div>
+
+        <div class="chart-legend">
+            <div class="legend-item">
+                <span class="legend-dot" style="background:#22c55e"></span>
+                Available
+            </div>
+
+            <div class="legend-item">
+                <span class="legend-dot" style="background:#ef4444"></span>
+                Occupied
+            </div>
+
+            <div class="legend-item">
+                <span class="legend-dot" style="background:#f59e0b"></span>
+                Maintenance
+            </div>
+        </div>
+
+    </div>
+
+    <!-- ZONE-WISE CHART -->
+
+    <div class="chart-panel">
+
+        <h3>Zone-wise Booking Comparison</h3>
+
+        <p class="chart-description">
+            Comparison of total bookings recorded in different parking zones.
+        </p>
+
+        <div id="zoneAnalytics">
+            <p class="chart-empty">Loading zone-wise statistics...</p>
+        </div>
+
+    </div>
+
+    <!-- DAILY BOOKING CHART -->
+
+    <div class="chart-panel">
+
+        <h3>Daily Booking Trend</h3>
+
+        <p class="chart-description">
+            Daily booking activity based on booking entry dates.
+        </p>
+
+        <div id="dailyAnalytics">
+            <p class="chart-empty">Loading daily booking trends...</p>
+        </div>
+
+    </div>
+
+</section>
+
+<!-- BOOKING QUEUE -->
+
+<section id="queue" class="section">
+
+    <div class="panel">
+
+        <h2>Booking Queue (FIFO)</h2>
+
+        <p class="muted">
+            Requests are processed in First-In, First-Out order.
+            The system assigns the nearest available slot using
+            the Greedy method.
+        </p>
+
+        <button class="secondary" onclick="loadQueue()">Refresh Queue</button>
+
+        <button class="primary" onclick="processNext()">
+            Process Next Booking
+        </button>
+
+        <button class="secondary" onclick="greedyPreview()">
+            Greedy Slot Preview
+        </button>
+
+        <div id="greedyResult" class="notice" style="display:none"></div>
+
+        <div id="queueList" style="overflow-x:auto;margin-top:16px">
+            Loading queue...
+        </div>
+
+        <div id="queueToast" class="toast"></div>
+
+    </div>
+
+</section>
+
+<!-- FEATURES -->
+
+<section id="features" class="section">
+
+    <div class="panel">
+
+        <h2>System Features</h2>
+
+        <p class="muted">
+            Main features and technologies used in the ParkSmart application.
+        </p>
+
+        <div class="features">
+
+            <div class="feature">
+                <h3>Live Slot Status</h3>
+                <p>Displays all 20 parking slots and their current availability directly from MySQL.</p>
+            </div>
+
+            <div class="feature">
+                <h3>Vehicle Registration</h3>
+                <p>Registers vehicle and owner details through the application.</p>
+            </div>
+
+            <div class="feature">
+                <h3>FIFO Booking Queue</h3>
+                <p>Processes parking requests in First-In, First-Out order.</p>
+            </div>
+
+            <div class="feature">
+                <h3>Greedy Allocation</h3>
+                <p>Selects the nearest available parking slot for a booking.</p>
+            </div>
+
+            <div class="feature">
+                <h3>Binary Search</h3>
+                <p>Searches for a particular parking slot using its slot number.</p>
+            </div>
+
+            <div class="feature">
+                <h3>MySQL Database</h3>
+                <p>Stores user, vehicle, parking slot and booking information.</p>
+            </div>
+
+            <div class="feature">
+                <h3>Zone-wise View</h3>
+                <p>Displays parking slots according to Zones A, B and C.</p>
+            </div>
+
+            <div class="feature">
+                <h3>Database Transactions</h3>
+                <p>Maintains booking consistency using database transactions.</p>
+            </div>
+
+            <div class="feature">
+                <h3>AI Availability Prediction</h3>
+                <p>Estimates future parking availability using a machine learning model.</p>
+            </div>
+
+            <div class="feature">
+                <h3>Parking Analytics</h3>
+                <p>Displays booking totals, zone-wise usage and daily booking trends.</p>
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+<!-- ABOUT -->
+
+<section id="about" class="section">
+
+    <div class="panel">
+
+        <h2>About ParkSmart</h2>
+
+        <div class="about-intro">
+            ParkSmart is a web-based Smart Parking Allocation System
+            developed to simplify and improve parking management.
+            It provides a digital platform for checking parking slot
+            availability, registering vehicles, and managing parking
+            booking requests.
+
+            The system manages a permanent inventory of 20 parking
+            slots across three zones. It uses database connectivity,
+            data structures, algorithms, and machine learning concepts
+            to make parking management more organized and efficient.
+        </div>
+
+        <div class="about-block">
+
+            <h3>Our Purpose</h3>
+
+            <p class="muted" style="margin-top:10px">
+                The main purpose of ParkSmart is to reduce the time and
+                effort required to manage parking spaces manually.
+                It helps users view parking availability and allows
+                administrators to process booking requests systematically.
+            </p>
+
+        </div>
+
+        <div class="about-block">
+
+            <h3>How the System Works</h3>
+
+            <ul class="about-list">
+                <li>Users enter their personal and vehicle details.</li>
+                <li>Booking requests are stored in a FIFO queue.</li>
+                <li>The system selects the nearest available slot using a Greedy strategy.</li>
+                <li>MySQL stores user, vehicle, slot, and booking information.</li>
+                <li>AI-based functionality estimates future parking availability.</li>
+                <li>Analytics display parking usage and booking trends.</li>
+            </ul>
+
+        </div>
+
+        <div class="about-block">
+
+            <h3>Technology Stack</h3>
+
+            <ul class="about-list">
+                <li>HTML, CSS and JavaScript</li>
+                <li>Java Servlets and JDBC</li>
+                <li>MySQL Database</li>
+                <li>Python and Flask</li>
+                <li>Pandas, NumPy and Matplotlib</li>
+                <li>Scikit-learn</li>
+                <li>Apache NetBeans and Apache Tomcat</li>
+            </ul>
+
+        </div>
+
+        <div class="about-block">
+
+            <h3>Project Goal</h3>
+
+            <p class="muted" style="margin-top:10px">
+                ParkSmart demonstrates how web development, database
+                management, algorithm design, and machine learning
+                can work together to solve a practical real-world
+                parking management problem.
+            </p>
+
+        </div>
+
+    </div>
+
+</section>
+
+<footer>
+    ParkSmart · Smart Parking Allocation System · 20 Parking Slots
+</footer>
+
+</main>
+</div>
+
+<script>
+
+let slots = [];
+let zone = "ALL";
+
+// PAGE NAVIGATION
+
+function showPage(id) {
+
+    document.querySelectorAll(".section").forEach(section => {
+        section.classList.toggle("active", section.id === id);
+    });
+
+    document.querySelectorAll(".nav").forEach(link => {
+        link.classList.toggle("active", link.dataset.page === id);
+    });
+
+    const titles = {
+        dashboard: "Smart Parking Dashboard",
+        register: "Register Vehicle",
+        ai: "AI Parking Insights",
+        queue: "Booking Queue",
+        features: "System Features",
+        about: "About ParkSmart"
+    };
+
+    document.getElementById("pageTitle").textContent =
+        titles[id] || "ParkSmart";
+
+    if (id === "queue") loadQueue();
+
+    if (id === "dashboard") {
+        loadSlots();
+        loadDashboardAIOverview();
+    }
+
+    if (id === "ai") loadAIInsights();
+}
+
+document.querySelectorAll(".nav").forEach(link => {
+    link.onclick = () => showPage(link.dataset.page);
+});
+
+// ZONE FILTER
+
+document.querySelectorAll(".tab").forEach(button => {
+
+    button.onclick = () => {
+
+        zone = button.dataset.zone;
+
+        document.querySelectorAll(".tab").forEach(tab => {
+            tab.classList.toggle("active", tab === button);
+        });
+
+        render("dashboardSlots");
+    };
+
+});
+
+// HELPER FUNCTIONS
+
+function avail(slot) {
+    return String(slot.status).trim().toUpperCase() === "AVAILABLE";
+}
+
+function safe(value) {
+    return String(value ?? "").replace(/[&<>"']/g, char => ({
+        "&": "&amp;",
+        "<": "&lt;",
+        ">": "&gt;",
+        '"': "&quot;",
+        "'": "&#39;"
+    })[char]);
+}
+
+// DISPLAY PARKING SLOTS
+
+function render(id) {
+
+    const box = document.getElementById(id);
+
+    if (!box) return;
+
+    box.replaceChildren();
+
+    const list = slots.filter(slot =>
+        zone === "ALL" ||
+        String(slot.zoneName).toUpperCase() === zone
+    );
+
+    if (!list.length) {
+        box.textContent = "No slots available from database.";
+        return;
+    }
+
+    list.forEach(slot => {
+
+        const status = String(slot.status).trim().toUpperCase();
+
+        const div = document.createElement("div");
+
+        div.className = "slot";
+
+        if (status === "OCCUPIED") {
+            div.classList.add("occupied");
+        } else if (status === "MAINTENANCE") {
+            div.classList.add("maintenance");
+        }
+
+        div.innerHTML = `
+            <strong>${safe(slot.slotNumber)}</strong>
+            <br>
+            ● ${safe(status)}
+            <small>
+                Zone ${safe(slot.zoneName)} · Floor ${safe(slot.floorNumber)}
+            </small>
+        `;
+
+        box.appendChild(div);
+    });
+}
+
+// LOAD PARKING SLOTS FROM MYSQL
+
+async function loadSlots() {
+
+    try {
+
+        const response = await fetch("api/slots", {
+            cache: "no-store"
+        });
+
+        const data = await response.json();
+
+        if (!response.ok || !data.success) {
+            throw Error(data.message || "Could not load slots");
+        }
+
+        slots = data.slots || [];
+
+        const available = slots.filter(avail).length;
+
+        const occupied = slots.filter(slot =>
+            String(slot.status).trim().toUpperCase() === "OCCUPIED"
+        ).length;
+
+        document.getElementById("total").textContent = slots.length;
+        document.getElementById("available").textContent = available;
+        document.getElementById("occupied").textContent = occupied;
+
+        document.getElementById("dbStatus").textContent =
+            "● Database: Connected";
+
+        document.getElementById("dbStatus").style.color = "#166534";
+
+        render("dashboardSlots");
+
+        // Update AI overview using current database data
+        loadDashboardAIOverview();
+
+    } catch (error) {
+
+        document.getElementById("dbStatus").textContent =
+            "● Database: Connection error";
+
+        document.getElementById("dbStatus").style.color = "#991b1b";
+
+        document.getElementById("dashboardSlots").textContent =
+            "Could not load slots. Check the Tomcat server log.";
+    }
+}
+
+// BINARY SEARCH SLOT
+
+async function searchSlot() {
+
+    const slotNumber = document.getElementById("slotSearch").value.trim();
+    const result = document.getElementById("searchResult");
+
+    if (!slotNumber) {
+        result.textContent = "Please enter a parking slot number.";
+        result.className = "notice";
+        return;
+    }
+
+    result.textContent = "Searching for slot...";
+    result.className = "notice";
+
+    try {
+
+        const response = await fetch(
+            "api/slots/search?slotNumber=" + encodeURIComponent(slotNumber),
+            { cache: "no-store" }
+        );
+
+        const data = await response.json();
+
+        if (!response.ok || !data.success) {
+            throw Error(data.message || "Search failed");
+        }
+
+        if (data.found) {
+
+            const slot = data.slot;
+
+            result.innerHTML = `
+                <div class="notice">
+                    <h3>Parking Slot Found!</h3>
+                    <p><b>Slot Number:</b> ${safe(slot.slotNumber)}</p>
+                    <p><b>Zone:</b> ${safe(slot.zoneName)}</p>
+                    <p><b>Floor:</b> ${safe(slot.floorNumber)}</p>
+                    <p><b>Status:</b> ${safe(slot.status)}</p>
+                </div>
+            `;
+
+        } else {
+
+            result.textContent = "Parking slot not found.";
+        }
+
+    } catch (error) {
+
+        result.textContent = error.message;
+    }
+}
+
+function clearSearch() {
+    document.getElementById("slotSearch").value = "";
+    document.getElementById("searchResult").textContent = "";
+}
+
+// REGISTRATION MESSAGE
+
+function toast(message, kind) {
+
+    const box = document.getElementById("toast");
+
+    box.textContent = message;
+    box.className = "toast show " + kind;
+}
+
+// REGISTER VEHICLE FORM
+
+document.getElementById("bookingForm").onsubmit = async function(event) {
+
+    event.preventDefault();
+
+    const button = document.getElementById("submitBtn");
+
+    button.disabled = true;
+    button.textContent = "Adding request...";
+
+    try {
+
+        const formData = new FormData(event.target);
+
+        const response = await fetch("api/queue", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/x-www-form-urlencoded"
+            },
+            body: new URLSearchParams(formData)
+        });
+
+        const data = await response.json();
+
+        if (!response.ok || !data.success) {
+            throw Error(data.message || "Could not add request");
+        }
+
+        toast(
+            `Request added successfully! Queue ID: ${data.queueId}.`,
+            "success"
+        );
+
+        event.target.reset();
+
+    } catch (error) {
+
+        toast(error.message || "Request failed.", "error");
+
+    } finally {
+
+        button.disabled = false;
+        button.textContent = "Add Request to Booking Queue";
+    }
+};
+
+// LOAD BOOKING QUEUE
+
+async function loadQueue() {
+
+    const box = document.getElementById("queueList");
+
+    box.textContent = "Loading queue...";
+
+    try {
+
+        const response = await fetch("api/queue", {
+            cache: "no-store"
+        });
+
+        const data = await response.json();
+
+        if (!response.ok || !data.success) {
+            throw Error(data.message || "Could not load queue");
+        }
+
+        if (!data.queue || !data.queue.length) {
+            box.textContent = "No pending booking requests.";
+            return;
+        }
+
+        const table = document.createElement("table");
+
+        table.style.cssText =
+            "width:100%;border-collapse:collapse;text-align:left";
+
+        table.innerHTML = `
+            <thead>
+                <tr>
+                    <th>Queue ID</th>
+                    <th>Owner</th>
+                    <th>Mobile</th>
+                    <th>Vehicle</th>
+                    <th>Type</th>
+                    <th>Seats</th>
+                    <th>Request Time</th>
+                </tr>
+            </thead>
+        `;
+
+        const body = document.createElement("tbody");
+
+        data.queue.forEach(request => {
+
+            const row = document.createElement("tr");
+
+            [
+                request.queueId,
+                request.fullName,
+                request.mobileNumber,
+                request.vehicleName + " (" + request.vehicleNumber + ")",
+                request.vehicleType,
+                request.vehicleSeaters,
+                request.requestTime
+            ].forEach(value => {
+
+                const cell = document.createElement("td");
+
+                cell.textContent = value ?? "";
+                cell.style.padding = "10px 6px";
+                cell.style.borderTop = "1px solid #e2e8f0";
+
+                row.appendChild(cell);
+            });
+
+            body.appendChild(row);
+        });
+
+        table.appendChild(body);
+        box.replaceChildren(table);
+
+    } catch (error) {
+
+        box.textContent = error.message;
+    }
+}
+
+// PROCESS NEXT BOOKING
+
+async function processNext() {
+
+    const box = document.getElementById("queueToast");
+
+    box.className = "toast";
+
+    try {
+
+        const response = await fetch("api/queue/process", {
+            method: "POST"
+        });
+
+        const data = await response.json();
+
+        if (!response.ok || !data.success) {
+            throw Error(data.message || "Could not process request");
+        }
+
+        box.textContent =
+            `Booking successful! Booking ID: ${data.bookingId}. Assigned slot: ${data.slotNumber}.`;
+
+        box.className = "toast show success";
+
+        await Promise.all([
+            loadQueue(),
+            loadSlots()
+        ]);
+
+        await loadDashboardAIOverview();
+
+        if (document.getElementById("ai").classList.contains("active")) {
+            await loadAIInsights();
+        }
+
+    } catch (error) {
+
+        box.textContent = error.message;
+        box.className = "toast show error";
+    }
+}
+
+// GREEDY SLOT PREVIEW
+
+async function greedyPreview() {
+
+    const box = document.getElementById("greedyResult");
+
+    box.style.display = "block";
+
+    try {
+
+        const response = await fetch("api/greedy-preview", {
+            cache: "no-store"
+        });
+
+        const data = await response.json();
+
+        if (!response.ok || !data.success) {
+            throw Error(data.message || "Preview failed");
+        }
+
+        if (data.found) {
+
+            box.textContent =
+                `Greedy preview: nearest available slot is ${data.slot.slotNumber}, Zone ${data.slot.zoneName}, Floor ${data.slot.floorNumber} (${data.slot.distanceMeters} metres away). This is only a preview; it does not reserve the slot.`;
+
+        } else {
+
+            box.textContent = "No available slots for allocation.";
+        }
+
+    } catch (error) {
+
+        box.textContent = error.message;
+    }
+}
+
+// AI PARKING PREDICTION
+
+async function loadAIPrediction() {
+
+    try {
+
+        const response = await fetch("api/ai/prediction", {
+            cache: "no-store"
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+            throw Error(data.error || data.message || "Prediction loading failed");
+        }
+
+        document.getElementById("prediction30").textContent =
+            data.predicted_after_30_minutes ?? "—";
+
+        document.getElementById("prediction60").textContent =
+            data.predicted_after_60_minutes ?? "—";
+
+        document.getElementById("predictionInfo").textContent =
+            "Currently available: " + data.current_available +
+            " parking slots.";
+
+        document.getElementById("overviewPrediction").textContent =
+            data.predicted_after_30_minutes ?? "—";
+
+    } catch (error) {
+
+        document.getElementById("predictionInfo").textContent =
+            "Could not load AI prediction: " + error.message;
+
+        document.getElementById("prediction30").textContent = "—";
+        document.getElementById("prediction60").textContent = "—";
+        document.getElementById("overviewPrediction").textContent =
+            "Unavailable";
+    }
+}
+
+// CREATE A HORIZONTAL BAR CHART
+
+function createBarChart(containerId, entries, barClass, emptyMessage) {
+
+    const container = document.getElementById(containerId);
+
+    container.replaceChildren();
+
+    if (!entries.length) {
+
+        const message = document.createElement("p");
+        message.className = "chart-empty";
+        message.textContent = emptyMessage;
+
+        container.appendChild(message);
+        return;
+    }
+
+    const maximum = Math.max(
+        1,
+        ...entries.map(item => Number(item.value) || 0)
+    );
+
+    entries.forEach(item => {
+
+        const value = Math.max(0, Number(item.value) || 0);
+
+        const row = document.createElement("div");
+        row.className = "chart-row";
+
+        const label = document.createElement("div");
+        label.className = "chart-label";
+        label.textContent = item.label;
+
+        const track = document.createElement("div");
+        track.className = "chart-track";
+
+        const fill = document.createElement("div");
+        fill.className = "chart-fill " + barClass;
+
+        const percentage = value === 0 ? 0 : (value / maximum) * 100;
+
+        fill.style.width = percentage + "%";
+
+        track.appendChild(fill);
+
+        const number = document.createElement("div");
+        number.className = "chart-value";
+        number.textContent = value;
+
+        row.append(label, track, number);
+
+        container.appendChild(row);
+    });
+}
+
+// PARKING ANALYTICS
+
+async function loadAIAnalytics() {
+
+    try {
+
+        const response = await fetch("api/ai/analytics", {
+            cache: "no-store"
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+            throw Error(data.error || data.message || "Analytics loading failed");
+        }
+
+        document.getElementById("aiBookings").textContent =
+            data.total_bookings ?? 0;
+
+        document.getElementById("aiMaintenance").textContent =
+            data.maintenance_slots ?? 0;
+
+        // PARKING AVAILABILITY CHART
+
+        const availabilityData = [
+            {
+                label: "Available",
+                value: data.available_slots,
+                className: "available-fill"
+            },
+            {
+                label: "Occupied",
+                value: data.occupied_slots,
+                className: "occupied-fill"
+            },
+            {
+                label: "Maintenance",
+                value: data.maintenance_slots,
+                className: "maintenance-fill"
+            }
+        ];
+
+        const availabilityBox =
+            document.getElementById("availabilityChart");
+
+        availabilityBox.replaceChildren();
+
+        const totalSlots = Number(data.total_slots) || 0;
+
+        availabilityData.forEach(item => {
+
+            const row = document.createElement("div");
+            row.className = "chart-row";
+
+            const label = document.createElement("div");
+            label.className = "chart-label";
+            label.textContent = item.label;
+
+            const track = document.createElement("div");
+            track.className = "chart-track";
+
+            const fill = document.createElement("div");
+            fill.className = "chart-fill " + item.className;
+
+            const value = Math.max(0, Number(item.value) || 0);
+
+            fill.style.width = totalSlots > 0
+                ? (value / totalSlots * 100) + "%"
+                : "0%";
+
+            track.appendChild(fill);
+
+            const number = document.createElement("div");
+            number.className = "chart-value";
+            number.textContent = value;
+
+            row.append(label, track, number);
+
+            availabilityBox.appendChild(row);
+        });
+
+        // ZONE-WISE BOOKING CHART
+
+        const zoneEntries = Object.entries(
+            data.zone_wise_bookings || {}
+        ).map(([name, value]) => ({
+            label: "Zone " + name,
+            value: Number(value)
+        }));
+
+        zoneEntries.sort((a, b) =>
+            a.label.localeCompare(b.label)
+        );
+
+        createBarChart(
+            "zoneAnalytics",
+            zoneEntries,
+            "zone-fill",
+            "No zone booking data available."
+        );
+
+        // DAILY BOOKING TREND CHART
+
+        const dailyEntries = Object.entries(
+            data.daily_booking_trends || {}
+        ).map(([date, value]) => ({
+            label: date,
+            value: Number(value)
+        }));
+
+        dailyEntries.sort((a, b) =>
+            a.label.localeCompare(b.label)
+        );
+
+        createBarChart(
+            "dailyAnalytics",
+            dailyEntries,
+            "daily-fill",
+            "No daily booking data available."
+        );
+
+    } catch (error) {
+
+        document.getElementById("availabilityChart").textContent =
+            "Could not load parking availability chart: " + error.message;
+
+        document.getElementById("zoneAnalytics").textContent =
+            "Could not load zone analytics.";
+
+        document.getElementById("dailyAnalytics").textContent =
+            "Could not load daily booking trends.";
+    }
+}
+
+// DASHBOARD AI OVERVIEW
+
+async function loadDashboardAIOverview() {
+
+    // Get current slot counts directly from Java and MySQL
+
+    try {
+
+        const response = await fetch("api/slots", {
+            cache: "no-store"
+        });
+
+        const data = await response.json();
+
+        if (!response.ok || !data.success) {
+            throw Error("Could not load parking slots.");
+        }
+
+        const allSlots = data.slots || [];
+
+        const available = allSlots.filter(avail).length;
+
+        const occupied = allSlots.filter(slot =>
+            String(slot.status).trim().toUpperCase() === "OCCUPIED"
+        ).length;
+
+        document.getElementById("overviewAvailable").textContent =
+            available;
+
+        document.getElementById("overviewOccupied").textContent =
+            occupied;
+
+        const total = allSlots.length;
+
+        const occupancy = total > 0
+            ? occupied / total * 100
+            : 0;
+
+        let insight;
+
+        if (total === 0) {
+
+            insight = "No parking slot information is available.";
+
+        } else if (available === 0) {
+
+            insight = "All parking slots are currently unavailable.";
+
+        } else if (occupancy >= 80) {
+
+            insight = `Parking occupancy is high at ${Math.round(occupancy)}%. Only ${available} slots are available.`;
+
+        } else if (occupancy >= 50) {
+
+            insight = `Parking usage is moderate. ${available} slots are available.`;
+
+        } else {
+
+            insight = `Parking availability is good. ${available} slots are available.`;
+        }
+
+        document.getElementById("overviewInsight").textContent = insight;
+
+    } catch (error) {
+
+        document.getElementById("overviewInsight").textContent =
+            "Could not load current parking availability.";
+    }
+
+    // Load booking analytics independently
+
+    try {
+
+        const response = await fetch("api/ai/analytics", {
+            cache: "no-store"
+        });
+
+        const analytics = await response.json();
+
+        if (!response.ok) {
+            throw Error("Analytics unavailable");
+        }
+
+        document.getElementById("overviewBookings").textContent =
+            analytics.total_bookings ?? 0;
+
+        const zones = Object.entries(
+            analytics.zone_wise_bookings || {}
+        );
+
+        const zoneBox = document.getElementById("overviewZone");
+
+        if (zones.length === 0) {
+
+            zoneBox.textContent =
+                "No zone booking information available.";
+
+        } else {
+
+            zones.sort((a, b) => Number(b[1]) - Number(a[1]));
+
+            const highest = Number(zones[0][1]);
+
+            const topZones = zones
+                .filter(item => Number(item[1]) === highest)
+                .map(item => "Zone " + item[0]);
+
+            zoneBox.textContent =
+                `${topZones.join(", ")} — ${highest} bookings`;
+        }
+
+    } catch (error) {
+
+        document.getElementById("overviewBookings").textContent = "—";
+
+        document.getElementById("overviewZone").textContent =
+            "Booking analytics unavailable.";
+    }
+
+    // Load prediction independently
+
+    try {
+
+        const response = await fetch("api/ai/prediction", {
+            cache: "no-store"
+        });
+
+        const prediction = await response.json();
+
+        if (!response.ok) {
+            throw Error("Prediction unavailable");
+        }
+
+        document.getElementById("overviewPrediction").textContent =
+            prediction.predicted_after_30_minutes ?? "—";
+
+    } catch (error) {
+
+        document.getElementById("overviewPrediction").textContent =
+            "Unavailable";
+    }
+}
+
+// LOAD BOTH AI FEATURES
+
+async function loadAIInsights() {
+
+    await Promise.all([
+        loadAIPrediction(),
+        loadAIAnalytics()
+    ]);
+}
+
+// INITIAL LOAD
+
+loadSlots();
+
+</script>
+
+</body>
+</html>
